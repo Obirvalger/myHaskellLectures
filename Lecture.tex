@@ -21,6 +21,9 @@ Haskell – чисто функциональный, типизированны�
 Типы Int, Integrer, Float, Double, Bool = True | False, Char.
 
 Арифметические операции.
+\begin{lstlisting}
++, -, *, /, div, mod
+\end{lstlisting}
 
 Тип функции:
 \begin{lstlisting}
@@ -85,8 +88,39 @@ splitAt n xs = (take n xs, drop n xs)
 \section{Бесконечные списки}
 \begin{lstlisting}
 [1..]
+
 [2,4..]
-take 5 [1..]               
+
+take 5 [1..]
+[1,2,3,4,5]
+
+repeat :: a -> [a]
+repeat x = x : repeat x
+
+take 3 $ repeat 2
+[2,2,2]
+
+($) :: (a -> b) -> a -> b
+f $ x = f x
+
+replicate :: Int a -> [a]
+replicate n x = take n $ repeat x
+
+cycle :: [a] -> [a]
+cycle xs = xs ++ cycle xs
+
+take 5 $ cycle [1,2]
+[1,2,1,2,1]
+
+iterate :: (a -> a) -> a -> [a]
+iterate f x = x : iterate f (f x)
+\end{lstlisting}
+
+Линейный генератор 
+\begin{lstlisting}
+f x = mod (5*x + 3) 11
+take 5 $ iterate f 1
+[1,8,10,9,4]
 \end{lstlisting}
 
 \section{Функции высших порядков}
@@ -97,7 +131,20 @@ takeWhile _ []     = []
 takeWhile p (x:xs) | p x       = x : takeWhile p xs
                    | otherwise = []
 
-dropWhile                  
+dropWhile
+
+filter :: (a -> Bool) -> [a] -> [a]
+filter _ [] = []
+filter p (x:xs) = if p x then x : filter xs else filter xs
+\end{lstlisting}
+
+Решето Эратосфена
+
+\begin{lstlisting}
+sieve :: [Integrer] -> [Integrer]
+sieve (x:xs) = x : sieve (filter (\y -> y `mod` x /= 0) xs)
+
+primes = sieve [2..]
 \end{lstlisting}
 
 \section{Свёртка}
