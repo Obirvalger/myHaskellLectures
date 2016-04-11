@@ -1,0 +1,111 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{listings}
+\usepackage{fullpage}
+
+\begin{document}
+\lstset{language=Haskell} 
+\setcounter{secnumdepth}{0}
+\title{Задачи по Haskell}
+\date{}
+\maketitle
+При решении задач можно использовать сопостовление по шаблону и свои имена переменных у функций.
+При решении задач можно использовать любые функции из модуля Prelude, а использование любых других
+модулей запрещено, если в условии задачи не сказано иное.
+\section{Задачи на списки}
+\begin{enumerate}
+
+\item {
+\begin{lstlisting}
+mul :: Num a => [[a]] -> [[a]] -> [[a]] 
+mul a b = ?
+\end{lstlisting}
+Перемножение двух матриц. Предполагается, что у матриц подходящие размеры. Можно использовать
+функцию transpose из модуля Data.List, подключать модуль не нужно.
+\begin{lstlisting}
+mul [[1,2],[3,4]] [[0],[1]] = [[2],[4]]
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+divide :: (a -> Bool) -> [a] -> [[a]]
+divide p xs = ?
+\end{lstlisting}
+Написать функцию divide, которая принимает предикат p и список xs и разбивает xs на список
+списков, начиная новый список каждый раз, когда изменяется значение предиката.
+\begin{lstlisting}
+divide even [] = []
+divide even [1,2,3,4] = [[1],[2],[3],[4]]
+divide even [1,3,5,4,2] = [[1,3,5],[4,2]]
+divide even [3,5,7] = [[3,5,7]]
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+compress :: [a] -> [a]
+compress xs = ?
+\end{lstlisting}
+Если в списке идут подряд одинаковые элементы, то нужно оставить из них только одно значение.
+\begin{lstlisting}
+compress "aaaabccaadeeee" = "abcade"
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+encode :: [a] -> [(Int,a)]
+encode xs = ?
+\end{lstlisting}
+Результирующий список состоит из пар (число вхождений подряд элемента, элемент).
+\begin{lstlisting}
+encode "aaabccaadeee" = [(3,'a'),(1,'b'),(2,'c'),(2,'a'),(1,'d'),(3,'e')]
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+repli :: [a] -> Int -> [a]
+repli xs n = ?
+\end{lstlisting}
+Каждый элемент в списке xs повторить n раз.
+\begin{lstlisting}
+repli "abc" 3 = "aaabbbccc"
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+change :: a -> [[a]]
+change n = ?
+\end{lstlisting}
+Пусть есть список положительных достоинств монет coins, отсортированный по возрастанию.
+Напишите функцию change, которая разбивает переданную ей положительную сумму денег на монеты
+достоинств из списка coins всеми возможными способами.
+Порядок монет в каждом разбиении имеет значение, то есть наборы [2,2,3] и [2,3,2] — различаются.
+Список coins определять не надо.
+Например, если coins = [2, 3, 7]
+\begin{lstlisting}
+change 7 = [[2,2,3],[2,3,2],[3,2,2],[7]]
+\end{lstlisting}
+}
+
+\item {
+\begin{lstlisting}
+seqA :: Int -> Integer
+seqA n = ?
+\end{lstlisting}
+Функция seqA должна находить элементы следующей рекуррентной последовательности:
+$$a_0 = 1; a_1 = 2; a_2 = 3; a_{k+3} = a_{k+2} + a_{k+1} - 2a_k$$
+\begin{lstlisting}
+seqA 0 = 1
+seqA 4 = 2
+seqA 5 = -1
+\end{lstlisting}
+}
+
+\end{enumerate}
+\end{document}
+

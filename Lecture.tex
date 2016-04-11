@@ -1,0 +1,123 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{listings}
+\usepackage{fullpage}
+
+\begin{document}
+\lstset{language=Haskell} 
+\setcounter{secnumdepth}{0}
+\title{План лекций}
+\date{}
+\maketitle
+
+\section{Введение}
+Компилятор ghc, ghci, Haskell Platform.
+
+Haskell – чисто функциональный, типизированный язык программирования.
+
+Чистые функции.
+
+Типы Int, Integrer, Float, Double, Bool = True | False, Char.
+
+Арифметические операции.
+
+Тип функции:
+\begin{lstlisting}
+and :: Bool -> Bool -> Bool
+and False _ = False
+and True x = x
+\end{lstlisting}
+
+Кортежи (a,b).
+fst, snd.
+
+Списки
+\begin{lstlisting}
+[a] = [] | a : [a]
+[]
+1:2:[]
+[1,2]
+[1..3] = [1,2,3]
+[1,1.5..3] = [1.0,1.5,2.0,2.5,3.0]
+\end{lstlisting}
+
+Конструктор списков (list comprehensions)
+\begin{lstlisting}
+[x | x <- [1..3]] = [1,2,3]
+[(x,y) | x <- [1,2], y <- [1,2]] = [(1,1), (1,2), (2,1), (2,2)]
+[(x,y) | x <- [1..3], y <- [1..4], x == y] = [(1,1), (2,2), (3,3)]
+\end{lstlisting}
+
+\section{Базовые функции со списками}
+\begin{lstlisting}
+head :: [a] -> [a]
+head (x:xs) = x
+tail :: [a] -> [a]
+tail (x:xs) = xs
+
+(++) :: [a] -> [a] -> [a]
+(++) [] ys     = ys
+(++) (x:xs) ys = x : (xs ++ ys)
+
+(x:_)  !! 0 = x
+(_:xs) !! n = xs !! (n-1)
+
+reverse :: [a] -> [a]
+reverse [] = []
+reverse (x:xs) = reverse xs ++ [x]
+
+reverse l =  rev l [] where
+    rev []     a = a
+    rev (x:xs) a = rev xs (x:a)
+
+take :: Int -> [a] -> [a]
+take _ []     = []
+take n (x:xs) | n <= 0    = []
+              | otherwise = x : take (n-1) xs
+
+drop
+
+splitAt :: Int -> [a] -> ([a], [a])
+splitAt n xs = (take n xs, drop n xs)
+\end{lstlisting}
+
+\section{Бесконечные списки}
+\begin{lstlisting}
+[1..]
+[2,4..]
+take 5 [1..]               
+\end{lstlisting}
+
+\section{Функции высших порядков}
+
+\begin{lstlisting}
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile _ []     = []
+takeWhile p (x:xs) | p x       = x : takeWhile p xs
+                   | otherwise = []
+
+dropWhile                  
+\end{lstlisting}
+
+\section{Свёртка}
+
+\begin{lstlisting}
+sum []     = 0
+sum (x:xs) = x + sum xs
+
+product []     = 1
+product (x:xs) = x * product xs
+
+concat []       = []
+concat (xs:xss) = xs ++ concat xss
+
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr f e []     = e
+foldr f e (x:xs) = f x foldr f e xs
+
+foldl :: (b -> a -> b) -> b -> [a] -> b
+foldl f e []     = e
+foldl f e (x:xs) = foldl f (f e x) xs
+\end{lstlisting}
+\end{document}
