@@ -13,6 +13,22 @@
 При решении задач можно использовать сопостовление по шаблону и свои имена переменных у функций.
 При решении задач можно использовать любые функции из модуля Prelude, а использование любых других
 модулей запрещено, если в условии задачи не сказано иное.
+\section{Функции, которые могут пригодиться}
+\begin{lstlisting}
+head :: [a] -> a
+tail :: [a] -> [a]
+sum :: [a] -> [a]
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
+transpose :: [[a]] -> [[a]]
+takeWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile :: (a -> Bool) -> [a] -> [a]
+not :: Bool -> Bool
+length :: [a] -> Int
+map :: (a -> b) -> a -> b
+concat :: [[a]] -> [a]
+replicate :: Int -> a -> [a]
+\end{lstlisting}
 \section{Задачи на списки}
 \begin{enumerate}
 

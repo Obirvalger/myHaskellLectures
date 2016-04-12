@@ -27,13 +27,25 @@ Haskell – чисто функциональный, типизированны�
 
 Тип функции:
 \begin{lstlisting}
-and :: Bool -> Bool -> Bool
-and False _ = False
-and True x = x
+not :: Bool -> Bool
+not False = True
+not True  = False
+
+plus :: Int -> Int -> Int
+plus x y = x + y
+
+plus3 :: Int -> Int
+plus3 = plus 3
 \end{lstlisting}
 
 Кортежи (a,b).
-fst, snd.
+\begin{lstlisting}
+fst (x,y) = x
+
+snd (x,y) = y
+
+('a',True)
+\end{lstlisting}
 
 Списки
 \begin{lstlisting}
@@ -42,6 +54,7 @@ fst, snd.
 1:2:[]
 [1,2]
 [1..3] = [1,2,3]
+[0,2..8] = [0,2,4,6,8]
 [1,1.5..3] = [1.0,1.5,2.0,2.5,3.0]
 \end{lstlisting}
 
@@ -54,15 +67,21 @@ fst, snd.
 
 \section{Базовые функции со списками}
 \begin{lstlisting}
-head :: [a] -> [a]
+head :: [a] -> a
 head (x:xs) = x
+
 tail :: [a] -> [a]
 tail (x:xs) = xs
+
+length           :: [a] -> Int
+length []        =  0
+length (x:xs)     =  1 + length xs
 
 (++) :: [a] -> [a] -> [a]
 (++) [] ys     = ys
 (++) (x:xs) ys = x : (xs ++ ys)
 
+(!!) :: [a] -> Int -> a
 (x:_)  !! 0 = x
 (_:xs) !! n = xs !! (n-1)
 
@@ -73,6 +92,12 @@ reverse (x:xs) = reverse xs ++ [x]
 reverse l =  rev l [] where
     rev []     a = a
     rev (x:xs) a = rev xs (x:a)
+
+[1,2,3] []
+[2,3] 1:[]
+[3] 2:1:[]
+[] 3:2:1:[]
+[] [3,2,1]
 
 take :: Int -> [a] -> [a]
 take _ []     = []
@@ -109,7 +134,7 @@ $
 ($) :: (a -> b) -> a -> b
 f $ x = f x
 
-replicate :: Int a -> [a]
+replicate :: Int -> a -> [a]
 replicate n x = take n $ repeat x
 
 cycle :: [a] -> [a]
@@ -179,13 +204,11 @@ zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith _ _ _           = []
 
+zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
+
 fibs = 0:1:zipWith (+) fibs (tail fibs)
 
 fib n = fibs !! n
-
-(!!) :: Int -> [a] -> [a]
-(x:xs) !! 0 = x
-(x:xs) !! n = xs !! (n-1)
 
 fib 3
 2
@@ -251,13 +274,18 @@ foldr1 f (x:xs) = f x foldr1 f xs
 
 maximum = foldr1 max
 
+filter p = foldr (\x xs -> if p x then x:xs else xs) []
+map f = foldr ((:) . f) []
+length = foldr (\_ n -> 1 + n) 0
+
 \end{lstlisting}
 
 \section{Data.List и сортировки}
 \begin{lstlisting}
 transpose []             = []
 transpose ([]   : xss)   = transpose xss
-transpose ((x:xs) : xss) = (x : [h | (h:_) <- xss]) : transpose (xs : [ t | (_:t) <- xss])
+transpose ((x:xs) : xss) =
+    (x : [h | (h:_) <- xss]) : transpose (xs : [ t | (_:t) <- xss])
 
 qsort :: Ord a => [a] -> [a]
 qsort []     = []
