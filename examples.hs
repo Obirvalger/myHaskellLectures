@@ -17,19 +17,15 @@ encode [] = []
 encode (x:xs) = (length $ x : takeWhile (==x) xs, x) : encode (dropWhile (==x) xs)                          
 
 repli :: [a] -> Int -> [a]
-repli xs n = concatMap (replicate n) xs
+repli xs n = concat $ map (replicate n) xs
+
+coins = [2, 3, 7]
 
 change :: (Ord a, Num a) => a -> [[a]]
 change n | n < 0     = []
          | n == 0    = [[]]
-         | otherwise = concat [map (x:) $ change $ n - x | x <- coins] where
-            coins = [2, 3, 7]
+         | otherwise = concat [map (x:) $ change $ n - x | x <- coins]
 
 seqA :: Int -> Integer
 seqA n = mySeq !! n where
     mySeq = 1:2:3:(zipWith3 (\x y z -> (-2)*x+y+z) mySeq (tail mySeq) (tail $ tail mySeq))
-
-take' :: Int -> [a] -> [a]
-take' _ []     = []
-take' n (x:xs) | n <= 0    = []
-               | otherwise = x : take' (n-1) xs
