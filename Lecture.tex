@@ -81,8 +81,6 @@ take n (x:xs) | n <= 0    = []
 
 drop
 
-splitAt :: Int -> [a] -> ([a], [a])
-splitAt n xs = (take n xs, drop n xs)
 \end{lstlisting}
 
 \section{Бесконечные списки}
@@ -97,9 +95,17 @@ take 5 [1..]
 repeat :: a -> [a]
 repeat x = x : repeat x
 
-take 3 $ repeat 2
-[2,2,2]
+take 2 (repeat 3)
+[3,3]
 
+take 2 (3 : repeat 3)
+3 : take 1 (repeat 3)
+3 : take 1 (3 : repeat 3)
+3 : 3 : take 0 (repeat 3)
+3 : 3 : take 0 (3 : repeat 3)
+3 : 3 : [] = [3,3]
+
+$
 ($) :: (a -> b) -> a -> b
 f $ x = f x
 
@@ -147,14 +153,69 @@ sieve (x:xs) = x : sieve (filter (\y -> y `mod` x /= 0) xs)
 primes = sieve [2..]
 \end{lstlisting}
 
+Map и zipWith
+
+\begin{lstlisting}
+map :: (a -> b) -> a -> b
+map f []     = []
+map f (x:xs) = f x : map f xs
+
+map (^2) [1..5]
+[1,4,9,16,25]
+
+map (2^) [1..5]
+[2,4,8,16,32]
+
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
+zipWith _ _ _           = []
+
+fibs = 0:1:zipWith (+) fibs (tail fibs)
+
+fib n = fibs !! n
+
+(!!) :: Int -> [a] -> [a]
+(x:xs) !! 0 = x
+(x:xs) !! n = xs !! (n-1)
+
+fib 3
+2
+
+fibs !! 3
+(0:1:zipWith (+) fibs (tail fibs)) !! 3
+(1:zipWith (+) fibs (tail fibs)) !! 2
+(zipWith (+) fibs (tail fibs)) !! 1
+(0 + 1 : zipWith (+)
+    (1:zipWith (+) fibs (tail fibs))
+    (zipWith (+) fibs (tail fibs))) !! 1
+(zipWith (+)
+    (1:zipWith (+) fibs (tail fibs))
+    (zipWith (+) fibs (tail fibs))) !! 0
+(zipWith (+)
+    (1:zipWith (+) fibs (tail fibs))
+    (zipWith (+)
+        (0:1:zipWith (+) fibs (tail fibs))
+        (1:zipWith (+) fibs (tail fibs)))) !! 0
+(zipWith (+)
+    (1:zipWith (+) fibs (tail fibs))
+    (0 + 1 : zipWith (+)
+        (1:zipWith (+) fibs (tail fibs))
+        (zipWith (+) fibs (tail fibs)))) !! 0
+(1 + 1 : zipWith (+)
+    (zipWith (+) fibs (tail fibs))
+    (zipWith (+)
+        (1:zipWith (+) fibs (tail fibs))
+        (zipWith (+) fibs (tail fibs)))) !! 0
+2
+
+
+\end{lstlisting}
+
 \section{Свёртка}
 
 \begin{lstlisting}
 sum []     = 0
 sum (x:xs) = x + sum xs
-
-product []     = 1
-product (x:xs) = x * product xs
 
 concat []       = []
 concat (xs:xss) = xs ++ concat xss
@@ -163,8 +224,23 @@ foldr :: (a -> b -> b) -> b -> [a] -> b
 foldr f e []     = e
 foldr f e (x:xs) = f x foldr f e xs
 
+sum = foldr (+) 0
+concat = foldr (++) []
+
 foldl :: (b -> a -> b) -> b -> [a] -> b
 foldl f e []     = e
 foldl f e (x:xs) = foldl f (f e x) xs
+
+reverse = foldl (flip (:)) []
+
+flip :: (a -> b -> c) -> b -> a -> c
+flip f x y = f y x
+
+foldr1 :: (a -> a -> a) -> [a] -> a
+foldr1 f [x]    = x
+foldr1 f (x:xs) = f x foldr1 f xs
+
+maximum = foldr1 max
+
 \end{lstlisting}
 \end{document}
