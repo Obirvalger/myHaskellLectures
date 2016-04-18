@@ -11,7 +11,8 @@
 \date{}
 \maketitle
 
-\section{Введение}
+\section{Списки}
+\subsection{Введение}
 Компилятор ghc, ghci, Haskell Platform.
 
 Haskell – чисто функциональный, типизированный язык программирования.
@@ -65,7 +66,9 @@ snd (x,y) = y
 [(x,y) | x <- [1..3], y <- [1..4], x == y] = [(1,1), (2,2), (3,3)]
 \end{lstlisting}
 
-\section{Базовые функции со списками}
+\clearpage
+
+\subsection{Базовые функции со списками}
 \begin{lstlisting}
 head :: [a] -> a
 head (x:xs) = x
@@ -108,7 +111,7 @@ drop
 
 \end{lstlisting}
 
-\section{Бесконечные списки}
+\subsection{Бесконечные списки}
 \begin{lstlisting}
 [1..]
 
@@ -130,7 +133,7 @@ take 2 (3 : repeat 3)
 3 : 3 : take 0 (3 : repeat 3)
 3 : 3 : [] = [3,3]
 
-$
+
 ($) :: (a -> b) -> a -> b
 f $ x = f x
 
@@ -154,7 +157,7 @@ take 5 $ iterate f 1
 [1,8,10,9,4]
 \end{lstlisting}
 
-\section{Функции высших порядков}
+\subsection{Функции высших порядков}
 
 \begin{lstlisting}
 takeWhile :: (a -> Bool) -> [a] -> [a]
@@ -187,7 +190,9 @@ sieve (x:xs) = x : sieve (filter (\y -> y `mod` x /= 0) xs)
 primes = sieve [2..]
 \end{lstlisting}
 
-Map и zipWith
+\clearpage
+
+\subsubsection{Map и zipWith}
 
 \begin{lstlisting}
 map :: (a -> b) -> a -> b
@@ -207,7 +212,9 @@ zipWith _ _ _           = []
 zipWith3 :: (a -> b -> c -> d) -> [a] -> [b] -> [c] -> [d]
 
 fibs = 0:1:zipWith (+) fibs (tail fibs)
-
+\end{lstlisting}
+Вычисление в стратегии сверху вниз:
+\begin{lstlisting}
 fib n = fibs !! n
 
 fib 3
@@ -239,11 +246,15 @@ fibs !! 3
         (1:zipWith (+) fibs (tail fibs))
         (zipWith (+) fibs (tail fibs)))) !! 0
 2
-
-
 \end{lstlisting}
 
-\section{Свёртка}
+В Haskell применяется измененная версия этой стратегии.
+Создается ссылка на fibs и fibs будет вычисляться только один раз, на каждом шаге добавляя новые
+элементы.
+
+\clearpage
+
+\subsection{Свёртка}
 
 \begin{lstlisting}
 sum []     = 0
@@ -280,7 +291,7 @@ length = foldr (\_ n -> 1 + n) 0
 
 \end{lstlisting}
 
-\section{Data.List и сортировки}
+\subsection{Data.List и сортировки}
 \begin{lstlisting}
 transpose []             = []
 transpose ([]   : xss)   = transpose xss
@@ -325,5 +336,81 @@ msort = mergeAll . sequences
       | otherwise = a:merge as' bs
     merge [] bs   = bs
     merge as []   = as
+\end{lstlisting}
+
+\section{Монады}
+\subsection{Maybe}
+\begin{lstlisting}
+data Maybe a = Nothing | Just a
+
+safeHead :: [a] -> Maybe a
+safeHead []    = Nothing
+safeHead (x:_) = Just x
+
+lookup                  :: (Eq a) => a -> [(a,b)] -> Maybe b
+lookup _ []             =  Nothing
+lookup key ((k,v):ps)
+    | key == k          =  Just v
+    | otherwise         =  lookup key ps
+
+lookup 2 [(1,"one"), (2,"two"), (3,"three")]
+Just "two"
+
+lookup 4 [(1,"one"), (2,"two"), (3,"three")]
+Nothing
+
+class Monad m where
+    return :: a -> m a
+    (>>=)  :: m a -> (a -> m b) -> m b
+
+instance Monad Maybe where
+    return x = Just x
+    Nothing  >>= f = Nothing
+    (Just x) >>= f = f x
+\end{lstlisting}
+\clearpage
+Последовательный поиск в нескольких списках (аналогичный подход при поиске в БД).
+\begin{lstlisting}
+empDep          = [("Mike", "It"), ("Jan", "Sales")]
+depCountry      = [("It", "Japan"), ("Sales", "USA")]
+countryCurrency = [("Japan", "JPY"), ("USA", "USD")]
+currencyRate    = [("JPY", 112), ("USD", 1)]
+
+f :: String -> Maybe Int
+f emp = case lookup emp empDep of
+          Nothing   -> Nothing
+          Just dep  -> case lookup dep depCountry of
+                         Nothing      -> Nothing
+                         Just country -> case lookup country countryCurrency of
+                                           Nothing       -> Nothing
+                                           Just curr -> lookup curr currencyRate
+
+fB emp = lookup' empDep emp >>= lookup' depCountry >>= lookup' countryCurrency
+         >>= lookup' currencyRate where
+           lookup' ps k = lookup k ps
+
+fD emp = do dep <- lookup emp empDep
+            country <- lookup dep depCountry
+            currency <- lookup country countryCurrency
+            lookup currency currencyRate
+\end{lstlisting}
+
+\subsection{List}
+\begin{lstlisting}
+instance Monad [a] where
+    return x = [x]
+    xs >>= f = concat (map f xs)
+\end{lstlisting}
+
+Построение грамматик.
+\begin{lstlisting}
+f 'a' = "ca"
+f 'b' = "bb"
+f 'c' = "a"
+
+take 3 $ iterate (>>= f) "abc"
+["abc","cabba","acabbbbca"]
+
+
 \end{lstlisting}
 \end{document}

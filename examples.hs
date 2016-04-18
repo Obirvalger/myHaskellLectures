@@ -29,7 +29,25 @@ seqA :: Int -> Integer
 seqA n = mySeq !! n where
     mySeq = 1:2:3:(zipWith3 (\x y z -> (-2)*x+y+z) mySeq (tail mySeq) (tail $ tail mySeq))
 
-transpose' []             = []
-transpose' ([]   : xss)   = transpose' xss
-transpose' ((x:xs) : xss) =
-    (x : [h | (h:_) <- xss]) : transpose' (xs : [ t | (_:t) <- xss])
+empDep          = [("Mike", "It"), ("Jan", "Sales")]
+depCountry      = [("It", "Japan"), ("Sales", "USA")]
+countryCurrency = [("Japan", "JPY"), ("USA", "USD")]
+currencyRate    = [("JPY", 112), ("USD", 1)]
+
+f :: String -> Maybe Int -- f возвращает страну по имени сотрудника
+f emp = case lookup emp empDep of
+          Nothing   -> Nothing
+          Just dep  -> case lookup dep depCountry of
+                         Nothing      -> Nothing
+                         Just country -> case lookup country countryCurrency of
+                                           Nothing       -> Nothing
+                                           Just currency -> lookup currency currencyRate
+
+fB emp = lookup' empDep emp >>= lookup' depCountry >>= lookup' countryCurrency
+         >>= lookup' currencyRate where
+           lookup' ps k = lookup k ps
+
+fD emp = do dep <- lookup emp empDep
+            country <- lookup dep depCountry
+            currency <- lookup country countryCurrency
+            lookup currency currencyRate
