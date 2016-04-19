@@ -7,7 +7,7 @@
 \begin{document}
 \lstset{language=Haskell} 
 \setcounter{secnumdepth}{0}
-Merge sort
+\subsubsection{Merge sort}
 \begin{lstlisting}
 sequences (a:b:xs)
   | a > b     = descending b [a]  xs
@@ -34,12 +34,12 @@ merge as@(a:as') bs@(b:bs')
 merge [] bs   = bs
 merge as []   = as
 
-mergeSort :: Ord a => [a] -> [a]
+mergeSort :: [a] -> [a]
 mergeSort = mergeAll . sequences
 
 \end{lstlisting}
 
-Последовательный поиск в нескольких списках (аналогичный подход при поиске в БД).
+\subsubsection{Последовательный поиск в списках (аналогичный подход при поиске в БД).}
 \begin{lstlisting}
 empDep          = [("Mike", "It"), ("Jan", "Sales")]
 depCountry      = [("It", "Japan"), ("Sales", "USA")]
