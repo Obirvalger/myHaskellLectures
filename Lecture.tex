@@ -308,7 +308,11 @@ isort (x:xs) = insert x (isort xs) where
   insert x []     = [x]
   insert x ys@(y:ys') | x > y     = y : insert x ys'
                       | otherwise = x : ys
+\end{lstlisting}
 
+\clearpage
+
+\begin{lstlisting}
 msort :: Ord a => [a] -> [a]
 msort = mergeAll . sequences
   where
@@ -362,13 +366,17 @@ Nothing
 class Monad m where
     return :: a -> m a
     (>>=)  :: m a -> (a -> m b) -> m b
+\end{lstlisting}
 
+\clearpage
+
+\begin{lstlisting}
 instance Monad Maybe where
     return x = Just x
     Nothing  >>= f = Nothing
     (Just x) >>= f = f x
 \end{lstlisting}
-\clearpage
+
 Последовательный поиск в нескольких списках (аналогичный подход при поиске в БД).
 \begin{lstlisting}
 empDep          = [("Mike", "It"), ("Jan", "Sales")]
@@ -426,11 +434,7 @@ putStrLn :: [Char] -> IO ()
 putStrLn xs = foldr (>>) (return ()) (map putChar xs) >> putChar '\n'
 
 getChar :: IO Char
-\end{lstlisting}
 
-\clearpage
-
-\begin{lstlisting}
 getLine :: IO [Char]
 getLine = do x <- getChar
              if x == '\n'
